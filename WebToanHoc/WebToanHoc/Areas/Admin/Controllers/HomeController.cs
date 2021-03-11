@@ -22,64 +22,69 @@ namespace WebToanHoc.Areas.Admin.Controllers
             ViewBag.category = category;
             return View();
         }
-        [HttpPost]
-        public ActionResult Index(HttpPostedFileBase[] file, string folderName,string cate)
-        {
-            GoogleDriveAPIHelper.CreateFolder(folderName);
-            string id = GoogleDriveAPIHelper.GetLinkFolder(folderName);
-            //GoogleDriveAPIHelper.UplaodFileOnDrive(file);
+          [HttpPost]
+          public ActionResult Index(HttpPostedFileBase[] file, string folderName, string cate)
+          {
+               //GoogleDriveAPIHelper.CreateFolder(folderName);
+               string id = GoogleDriveAPIHelper.GetLinkFolder(folderName);
+               if (id == "")
+               {
+                    GoogleDriveAPIHelper.CreateFolder(folderName);
+                    id = GoogleDriveAPIHelper.GetLinkFolder(folderName);
+               }
+               //GoogleDriveAPIHelper.UplaodFileOnDrive(file);
 
-            foreach (var item in file)
-            {
-                try
-                {
-                    //GoogleDriveAPIHelper.UplaodFileOnDrive(item);
-                    GoogleDriveAPIHelper.FileUploadInFolder(id, item);
-                }
-                catch
-                {
-                    ViewBag.Success = "File Upload fail on Google Drive";
-                    ViewBag.listLink = new List<string>();
-                    ViewBag.fileName=new List<string>();
-                    return View();
-                }
-            }
+               foreach (var item in file)
+               {
+                    try
+                    {
+                         //GoogleDriveAPIHelper.UplaodFileOnDrive(item);
+                         GoogleDriveAPIHelper.FileUploadInFolder(id, item);
+                    }
+                    catch
+                    {
+                         ViewBag.Success = "File Upload fail on Google Drive";
+                         ViewBag.listLink = new List<string>();
+                         ViewBag.fileName = new List<string>();
+                         return View();
+                    }
+               }
 
-            var lnk = GoogleDriveAPIHelper.linkDrive;
-            var fileName = GoogleDriveAPIHelper.fileName;
-            ViewBag.Success = "File Uploaded on Google Drive";
-            //List<String> list_link = new List<String>();
-            //foreach (var item in lnk)
-            //{
-            //    string[] temp = item.ToString().Split(' ');
-            //    list_link.Add(temp[0]);
-            //}
-            //ViewBag.list_link = list_link;
-            ViewBag.listLink = lnk;
-            ViewBag.fileName = fileName;
-            GoogleDriveAPIHelper.DeleteFolder();
-            int count = lnk.Count();
-            //ViewBag.count = count;sau đó thêm sản phẩm vào  danh mục ý
-            // Ý tưởng viết tiếp
-            //cho chọn danh mục 
-            for(int i=0; i<count; i++)
-            {
-                tbl_file new_file = new tbl_file();
-                new_file.file_name = fileName[i];
-                new_file.id_cate = Convert.ToInt32(cate);
-                new_file.link_drive = lnk[i];
-                new_file.status = 0;
-                db.tbl_file.Add(new_file);
-                db.SaveChanges();
+               var lnk = GoogleDriveAPIHelper.linkDrive;
+               var fileName = GoogleDriveAPIHelper.fileName;
+               ViewBag.Success = "File Uploaded on Google Drive";
+               //List<String> list_link = new List<String>();
+               //foreach (var item in lnk)
+               //{
+               //    string[] temp = item.ToString().Split(' ');
+               //    list_link.Add(temp[0]);
+               //}
+               //ViewBag.list_link = list_link;
+               ViewBag.listLink = lnk;
+               ViewBag.fileName = fileName;
+               GoogleDriveAPIHelper.DeleteFolder();
+               int count = lnk.Count();
+               //ViewBag.count = count;sau đó thêm sản phẩm vào  danh mục ý
+               // Ý tưởng viết tiếp
+               //cho chọn danh mục 
+               for (int i = 0; i < count; i++)
+               {
+                    tbl_file new_file = new tbl_file();
+                    new_file.file_name = fileName[i];
+                    new_file.id_cate = Convert.ToInt32(cate);
+                    new_file.link_drive = lnk[i];
+                    new_file.status = 0;
+                    db.tbl_file.Add(new_file);
+                    db.SaveChanges();
 
-            }
-            var category = db.tbl_category.ToList();
-            ViewBag.category = category;
-            
-            return View();
-        }
-        // GET: Admin/Home/Details/5
-        public ActionResult Details(int id)
+               }
+               var category = db.tbl_category.ToList();
+               ViewBag.category = category;
+
+               return View();
+          }
+          // GET: Admin/Home/Details/5
+          public ActionResult Details(int id)
         {
             return View();
         }
